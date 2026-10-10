@@ -96,10 +96,12 @@ async def root():
         "tasks_endpoint": "/tasks"
     }
 
+# GET /tasks – получить список задач (Read);
 @app.get("/tasks", response_model=List[Task])
 async def get_tasks():
     return list(tasks_db.values())
 
+# POST /tasks – создать новую задачу (Create);
 @app.post("/tasks", response_model=Task, status_code=status.HTTP_201_CREATED)
 async def create_task(task: TaskCreate):
     task_id = str(uuid.uuid4())
@@ -115,10 +117,12 @@ async def create_task(task: TaskCreate):
     tasks_db[task_id] = new_task
     return new_task
 
+# GET /tasks/{ID} – получить список задачу (Read);
 @app.get("/tasks/{task_id}", response_model=Task)
 async def get_task(task_id: str):
     return get_task_or_404(task_id)
 
+# PUT /tasks/{task_id} – обновить (изменить) задачу (Update);
 @app.put("/tasks/{task_id}", response_model=Task)
 async def update_task(task_id: str, task_update: TaskCreate):
     task = get_task_or_404(task_id)
@@ -134,13 +138,15 @@ async def update_task(task_id: str, task_update: TaskCreate):
     
     return task
 
+# DELETE /tasks/{task_id}) – удалить задачу (Delete);
 @app.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task(task_id: str):
-    # Добавить код метода
+ get_task_or_404(task_id) # Проверить, существует ли задача
+ del tasks_db[task_id]
+ return None
 
-    return None
 
-# Health check endpoint
+# Проверка работоспособности сервиса
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}

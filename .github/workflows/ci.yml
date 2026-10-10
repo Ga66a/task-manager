@@ -2,7 +2,7 @@ name: Basic CI
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main ] # Триггер по пушу в main ветку
   workflow_dispatch:
 
 permissions:
@@ -10,25 +10,25 @@ permissions:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # образ контейнера на котором будет происходить сборка
 
     steps:
-      - name: Checkout code
+      - name: Checkout code # Клонируем код в контейнер
         uses: actions/checkout@v5
 
-      - name: Set up Python
+      - name: Set up Python # Устанавливаем PYTHON
         uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
+      - name: Install dependencies # Устанавливаем необхордимые дополнеения (библиотеки)
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest 'httpx<0.28' flake8
 
-      - name: Run linter (critical errors only)
+      - name: Run linter (critical errors only) # Запускаем линтер для определения критических ошибок
         run: flake8 . --select=E9,F63,F7,F82 --show-source --statistics
 
-      - name: Run tests
+      - name: Run tests # Запускаем UNIT тесты
         run: pytest -q
